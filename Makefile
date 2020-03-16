@@ -1,2 +1,2 @@
-output: fibonacci_heap.cpp main.cpp
-	g++ -o output fibonacci_heap.cpp main.cpp
+hashtagcounter: fibonacci_heap.cpp main.cpp
+	g++ -o hashtagcounter fibonacci_heap.cpp main.cpp
