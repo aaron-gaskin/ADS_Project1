@@ -1,2 +1,4 @@
-hashtagcounter: fibonacci_heap.cpp main.cpp
-	g++ -o hashtagcounter fibonacci_heap.cpp main.cpp
+OBJS = fibonacci_heap.cpp node.cpp main.cpp
+
+hashtagcounter: $(OBJS)
+	g++ -Wall -o hashtagcounter fibonacci_heap.cpp node.cpp main.cpp

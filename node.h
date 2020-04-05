@@ -1,15 +1,19 @@
 #include <iostream>
 using namespace std;
 
-class Node {
-    public:
-        Node* parent;
-        Node* left;
-        Node* right;
-        Node* child;
-        int degree;
+//Node declaration
+class Node
+{
+public:
+    Node(int count, string hashtag);
+    ~Node();
+    Node *parent;
+    Node *prev;
+    Node *next;
+    Node *child;
+    int degree;
 
-        int count;
-        String hashtag;
-        bool cut;
+    int count;
+    string hashtag;
+    bool cut;
 };

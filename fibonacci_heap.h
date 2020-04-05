@@ -1,38 +1,27 @@
 #include <iostream>
 #include <string>
+#include <map>
+
+#include "node.h"
 using namespace std;
 
-//Node declaration
-class Node {
-    public:
-        Node(int count, string hashtag);
-        ~Node();
-        Node* parent;
-        Node* left;
-        Node* right;
-        Node* child;
-        int degree;
+class FibonacciHeap
+{
+public:
+    FibonacciHeap();
+    ~FibonacciHeap();
+    void CheckIfHashtagExists(string hashtag, int count);
+    void Insert(Node *newNode);
+    void IncreaseKey(Node *node, int addCount);
+    Node *RemoveMax();
+    void CascadeCut(Node *node);
+    int GetMax();
 
-        int count;
-        string hashtag;
-        bool cut;
-};
+    //TEST method
+    Node *Find(Node *node, int tagCount);
+    void Print();
 
-class FibonacciHeap {
-    public:
-        FibonacciHeap();
-        ~FibonacciHeap();
-        Node* Insert(int tagCount);
-        int GetMax();
-        Node* RemoveMax();
-        void IncreaseCount(Node* node, int addCount);
-        void Merge(Node* otherHeap);
-
-        //TEST method
-        Node* Find(Node* node, int tagCount);
-
-
-    private:
-        Node* maxNode;
-    
+private:
+    Node *maxNode;
+    map<string, Node *> hashTable;
 };
