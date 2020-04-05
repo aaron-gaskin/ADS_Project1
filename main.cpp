@@ -43,18 +43,47 @@ int main(int argc, char *argv[])
         string line = "";
         FibonacciHeap *fibHeap = new FibonacciHeap();
 
+        Node *node = new Node(4, "test");
+        node->child = new Node(3, "test2");
+        node->child->child = new Node(2, "test3");
+        node->child->child->child = new Node(1, "test4");
+        node->child->child->child->child = new Node(0, "test5");
+        fibHeap->Insert(node);
+        fibHeap->Print();
+
         while (getline(reader, line))
         {
             //if hashtag, check if in hashtable
             if (line[0] == '#')
+            {
+                //TEST
+                cout << endl
+                     << "Pre insert" << endl;
+                fibHeap->Print();
                 AddHashtagToTree(line, fibHeap);
+                cout << endl
+                     << "Post Insert" << endl;
+                fibHeap->Print();
+            }
 
             else if (line == "stop") //stop, end the program
                 cout << "That's all folks: " << line << endl;
 
             else //integer, print out x maxes
-                cout << "Int = " << line << endl;
+            {
+                //TEST
+                cout << endl
+                     << "Pre remove" << endl;
+                fibHeap->Print();
+                fibHeap->RemoveMax();
+                cout << endl
+                     << "Post remove" << endl;
+                fibHeap->Print();
+            }
         }
+        //TEST
+
+        ////TODO: send output to output_file.txt
 
         fibHeap->Print();
     }

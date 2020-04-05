@@ -8,7 +8,7 @@ Node::Node(int count, string hashtag)
     parent = NULL;
     child = NULL;
     degree = 0;
-    cut = false;
+    marked = false;
 }
 
 Node::~Node()

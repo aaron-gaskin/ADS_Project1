@@ -15,5 +15,5 @@ public:
 
     int count;
     string hashtag;
-    bool cut;
+    bool marked;
 };
