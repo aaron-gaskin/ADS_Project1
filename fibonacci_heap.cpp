@@ -42,34 +42,6 @@ void FibonacciHeap::Insert(Node *newNode)
     heapSize++;
 }
 
-//Link the two nodes along their next/prev pointers and return larger node
-Node *FibonacciHeap::LinkTrees(Node *nodeOne, Node *nodeTwo)
-{
-
-    //Null check both nodes
-    if (nodeTwo == NULL)
-        return nodeOne;
-
-    if (nodeOne == NULL)
-        return nodeTwo;
-
-    //Compare counts, switch so nodeTwo is maximum
-    if (nodeTwo->count <= nodeOne->count)
-    {
-        Node *temp = nodeTwo;
-        nodeTwo = nodeOne;
-        nodeOne = temp;
-    }
-
-    //Link nodeTwo and nodeOne
-    (nodeTwo->prev)->next = nodeOne;
-    nodeOne->next = nodeTwo;
-    nodeOne->prev = nodeTwo->prev;
-    nodeTwo->prev = nodeOne;
-
-    return nodeTwo;
-}
-
 //Increase the value of the node and compare to maxNode
 void FibonacciHeap::IncreaseKey(Node *node, int addCount)
 {
@@ -88,10 +60,22 @@ void FibonacciHeap::CascadeCut(Node *node)
     }
 }
 
-////TODO: test remove max and verify valid treesl
+////TODO: run removeMax n times then reinsert the removed maxes
+void FibonacciHeap::PrintOutMaxes(int n)
+{
+    Node *removedMaxes[n];
+
+    for (int i = 0; i < n; i++)
+    {
+        removedMaxes[i] = RemoveMax();
+    }
+}
+
 //Remove the max node and update the tree
 Node *FibonacciHeap::RemoveMax()
 {
+    Node *oldMax = maxNode;
+
     //Null check
     if (maxNode == NULL)
     {
@@ -102,54 +86,29 @@ Node *FibonacciHeap::RemoveMax()
     else if (maxNode == maxNode->next && maxNode->child == NULL)
     {
         maxNode = NULL;
-        return NULL;
+        return maxNode;
     }
 
-    //Declare variables
-    Node *oldMax = maxNode; //temp
-
-    //Check if maxNode has children
-    if (oldMax->child != NULL)
+    //Remove maxNode from the tree and link children to siblings if needed
+    if (maxNode->next == maxNode)
     {
-        //if so, merge all maxNode children into root list
-        Node *child = oldMax->child;
-        Node *oldChildNext;
-        do
-        {
-            //Store childNext for later use
-            oldChildNext = child->next;
-
-            //Unmark child and its children
-            child->marked = false;
-            UnmarkSiblingsAndChildren(child->child);
-
-            //Update pointers and maxNode if needed
-            maxNode = LinkTrees(child, maxNode);
-
-            child->parent = NULL;
-            child = oldChildNext;
-        } while (oldChildNext != oldMax->child);
+        maxNode = maxNode->child;
+        maxNode->parent = NULL;
     }
-
-    //Now that the children have been moved to root list
-    //cut out the old maxNode and change maxNode
-    (oldMax->prev)->next = oldMax->next;
-    (oldMax->next)->prev = oldMax->prev;
-    maxNode = oldMax->next;
+    else
+    {
+        maxNode->next->prev = maxNode->prev;
+        maxNode->prev->next = maxNode->next;
+        maxNode = LinkTrees(maxNode->next, maxNode->child);
+    }
 
     PairWiseMerge(maxNode);
 
-    //Consolidate();
-
-    //First, unmark and unparent all children of maxNode
-    //Second, merge all children into root list
-    //Third, pairwise merge all trees in the root list (update maxNode)
-    //Lastly, reset degree of current max to 0 and print values
     heapSize--;
+
     return oldMax;
 }
 
-////TODO: pairwise merge after removeMax
 //Pairwise merge all the trees in the root list
 void FibonacciHeap::PairWiseMerge(Node *node)
 {
@@ -173,19 +132,19 @@ void FibonacciHeap::PairWiseMerge(Node *node)
             degArr[node->degree] = NULL;
 
             //Compare node counts
-            if (node->count >= treeNode->count) //treeNode is less so make
+            if (node->count > treeNode->count) //treeNode is less so make
             {
                 //Remove treeNode from root list
-                treeNode->prev->next = treeNode->next;
-                treeNode->next->prev = treeNode->prev;
+                (treeNode->prev)->next = treeNode->next;
+                (treeNode->next)->prev = treeNode->prev;
                 AddChild(node, treeNode);
             }
             else //node is less so make child
             {
                 ////TODO: change to remove Node from list instead of treeNode
                 //Remove treeNode from root list
-                treeNode->prev->next = treeNode->next;
-                treeNode->next->prev = treeNode->prev;
+                (treeNode->prev)->next = treeNode->next;
+                (treeNode->next)->prev = treeNode->prev;
 
                 //if only one tree in heap
                 if (node->next == node)
@@ -206,30 +165,40 @@ void FibonacciHeap::PairWiseMerge(Node *node)
                 }
                 node = treeNode;
             }
+            degArr[node->degree] = node;
+            ////TODO: check if continue is needed
+            //continue;
         }
         else //Add node to empty degree spot in array
             degArr[node->degree] = node;
 
+        //Update maxNode as we merge the tree
+        if (maxNode->count < node->count)
+            maxNode = node;
+
         node = node->next;
     }
 
-    ////TODO: update maxNode as we travel through the list
+    ////TODO: verify that maxNode is always selected
     //Loop through the top list and update maxNode
-    Node *start = maxNode;
-    Node *current = maxNode->next;
-    while (current != start)
-    {
-        if (current->count > maxNode->count)
-            maxNode = current;
+    // Node *start = maxNode;
+    // Node *current = maxNode->next;
+    // while (current != start)
+    // {
+    //     if (current->count > maxNode->count)
+    //         maxNode = current;
 
-        current = current->next;
-    }
+    //     current = current->next;
+    // }
 }
 
-////TODO: test the AddChild method
 //Merge the two nodes by making one the child of the other
 void FibonacciHeap::AddChild(Node *parent, Node *child)
 {
+    //Remove child from tree
+    // child->prev->next = child->next;
+    // child->next->prev = child->prev;
+
     //Change child pointers
     child->parent = parent;
     child->next = child;
@@ -238,6 +207,33 @@ void FibonacciHeap::AddChild(Node *parent, Node *child)
     //Link children and increase parent degrees
     parent->child = LinkTrees(child, parent->child);
     parent->degree = parent->degree + 1;
+}
+
+//Link the two nodes along their next/prev pointers and return larger node
+Node *FibonacciHeap::LinkTrees(Node *nodeOne, Node *nodeTwo)
+{
+    //Null check both nodes
+    if (nodeTwo == NULL)
+        return nodeOne;
+
+    if (nodeOne == NULL)
+        return nodeTwo;
+
+    //Assume both nodes are part of a list
+    //Break the list at input nodes and then combine them
+    Node *twoNext = nodeTwo->next;
+    Node *onePrev = nodeOne->prev;
+
+    nodeTwo->next = nodeOne;
+    nodeOne->prev = nodeTwo;
+    twoNext->prev = onePrev;
+    onePrev->next = twoNext;
+
+    //Compare counts, return larger node
+    if (nodeTwo->count < nodeOne->count)
+        return nodeOne;
+    else
+        return nodeTwo;
 }
 
 ////TODO: test unmark
@@ -266,7 +262,6 @@ int FibonacciHeap::GetMax()
 }
 
 //TEST methods
-//Node* FibonacciHeap::Find(Node* node, int tagCount);
 void FibonacciHeap::Print()
 {
     Print(maxNode, 0);
@@ -286,11 +281,15 @@ void FibonacciHeap::Print(Node *node, int depth)
 
     while (temp != node && temp != NULL)
     {
+
         //space based on depth
         for (int i = 0; i < depth; i++)
             cout << "  ";
 
         cout << temp->hashtag << ": " << temp->count /*<< ": " << temp->marked*/ << endl;
+
+        ChildPrint(temp, depth);
+
         temp = temp->next;
     }
 }

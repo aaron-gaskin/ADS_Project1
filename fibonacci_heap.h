@@ -15,6 +15,7 @@ public:
     void Insert(Node *newNode);
     Node *LinkTrees(Node *newNode, Node *nodeTwo);
     void IncreaseKey(Node *node, int addCount);
+    void PrintOutMaxes(int n);
     Node *RemoveMax();
     void UnmarkSiblingsAndChildren(Node *node);
     void PairWiseMerge(Node *node);
@@ -23,7 +24,6 @@ public:
     int GetMax();
 
     //TEST method
-    Node *Find(Node *node, int tagCount);
     void Print();
     void Print(Node *node, int depth);
     void ChildPrint(Node *parentNode, int depth);
