@@ -46,23 +46,26 @@ int main(int argc, char *argv[])
         {
             //if hashtag, check if in hashtable
             if (line[0] == '#')
-                AddHashtagToTree(line, fibHeap);
+                AddHashtagToTree(line.substr(1), fibHeap);
 
             else if (line == "stop") //stop, end the program
                 cout << "That's all folks: " << line << endl;
 
-            else //integer, print out x maxes
+            else //integer, print out n maxes
             {
                 //TEST
-                cout << endl
-                     << "Pre remove" << endl;
-                fibHeap->Print();
+                // cout << endl
+                //      << "Pre remove" << endl;
+                // fibHeap->Print();
 
-                fibHeap->RemoveMax();
+                int n = atoi(line.c_str());
+                string output = fibHeap->PrintOutMaxes(n);
 
-                cout << endl
-                     << "Post remove" << endl;
-                fibHeap->Print();
+                cout << output << endl;
+
+                // cout << endl
+                //      << "Post remove" << endl;
+                // fibHeap->Print();
             }
         }
         //TEST

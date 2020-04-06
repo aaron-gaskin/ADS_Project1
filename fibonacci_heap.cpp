@@ -61,14 +61,37 @@ void FibonacciHeap::CascadeCut(Node *node)
 }
 
 ////TODO: run removeMax n times then reinsert the removed maxes
-void FibonacciHeap::PrintOutMaxes(int n)
+string FibonacciHeap::PrintOutMaxes(int n)
 {
     Node *removedMaxes[n];
 
+    string csvMaxes = "";
+
+    //RemoveMax() n times
     for (int i = 0; i < n; i++)
     {
-        removedMaxes[i] = RemoveMax();
+        Node *temp = RemoveMax();
+        removedMaxes[i] = new Node(temp->count, temp->hashtag);
+        hashTable.erase(temp->hashtag);
+
+        temp->next = temp->prev = temp;
+        temp->child = NULL;
+        temp = NULL;
+
+        //Format the string output
+        if (removedMaxes[i] != NULL && i != n - 1)
+            csvMaxes += removedMaxes[i]->hashtag + ",";
+        else if (removedMaxes[i] != NULL)
+            csvMaxes += removedMaxes[i]->hashtag;
     }
+
+    //Reinsert removed nodes
+    for (int i = 0; i < n; i++)
+    {
+        CheckIfHashtagExists(removedMaxes[i]->hashtag, removedMaxes[i]->count);
+    }
+
+    return csvMaxes;
 }
 
 //Remove the max node and update the tree
@@ -78,10 +101,8 @@ Node *FibonacciHeap::RemoveMax()
 
     //Null check
     if (maxNode == NULL)
-    {
-        cout << "The heap is empty." << endl;
         return NULL;
-    }
+
     //Check if maxNode is the only node
     else if (maxNode == maxNode->next && maxNode->child == NULL)
     {
@@ -92,11 +113,13 @@ Node *FibonacciHeap::RemoveMax()
     //Remove maxNode from the tree and link children to siblings if needed
     if (maxNode->next == maxNode)
     {
+        //If no siblings, make child maxNode
         maxNode = maxNode->child;
         maxNode->parent = NULL;
     }
     else
     {
+        //If siblings, link with maxNode children
         maxNode->next->prev = maxNode->prev;
         maxNode->prev->next = maxNode->next;
         maxNode = LinkTrees(maxNode->next, maxNode->child);
