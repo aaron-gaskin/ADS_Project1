@@ -15,9 +15,4 @@ Node::Node(int count, string hashtag)
 
 Node::~Node()
 {
-    if (right != NULL)
-        delete next;
-
-    if (child != NULL)
-        delete child;
 }

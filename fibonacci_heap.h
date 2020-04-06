@@ -11,16 +11,18 @@ class FibonacciHeap
 public:
     FibonacciHeap();
     ~FibonacciHeap();
+    void DeleteNodes(Node *node);
     void CheckIfHashtagExists(string hashtag, int count);
     void Insert(Node *newNode);
     Node *LinkTrees(Node *newNode, Node *nodeTwo);
     void IncreaseKey(Node *node, int addCount);
+    void CutNode(Node *node);
+    void CascadeCut(Node *node);
     string PrintOutMaxes(int n);
     Node *RemoveMax();
-    void UnmarkSiblingsAndChildren(Node *node);
+    void UnmarkChildren(Node *node);
     void PairWiseMerge(Node *node);
     void AddChild(Node *parent, Node *child);
-    void CascadeCut(Node *node);
     int GetMax();
 
     //TEST method
