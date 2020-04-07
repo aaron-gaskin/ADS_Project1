@@ -21,6 +21,7 @@ public:
     string PrintOutMaxes(int n);
     Node *RemoveMax();
     void UnmarkChildren(Node *node);
+    void SetParentToNull(Node *node);
     void PairWiseMerge(Node *node);
     void AddChild(Node *parent, Node *child);
     int GetMax();

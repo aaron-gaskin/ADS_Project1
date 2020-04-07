@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        fibHeap->Print();
+        //fibHeap->Print();
 
         reader.close();
         delete fibHeap;

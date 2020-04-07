@@ -55,6 +55,7 @@ void FibonacciHeap::CheckIfHashtagExists(string hashtag, int count)
 //Add a node to the heap using a hash
 void FibonacciHeap::Insert(Node *newNode)
 {
+    // cout << "\nInsert " << endl;
     //Put new node into fibHeap and update maxNode if needed
     maxNode = LinkTrees(newNode, maxNode);
 
@@ -66,6 +67,7 @@ void FibonacciHeap::Insert(Node *newNode)
 //Increase the value of the node and compare to maxNode
 void FibonacciHeap::IncreaseKey(Node *node, int addCount)
 {
+    // cout << "\nIncreaseKey" << endl;
     if (node == NULL)
     {
         cout << "\nNode doesn't exist: IncreaseKey" << endl;
@@ -85,6 +87,7 @@ void FibonacciHeap::IncreaseKey(Node *node, int addCount)
 /********* Cut node *********/
 void FibonacciHeap::CutNode(Node *node)
 {
+    // cout << "\nCutNode " << endl;
     Node *parent = node->parent;
 
     if (node == NULL)
@@ -100,12 +103,6 @@ void FibonacciHeap::CutNode(Node *node)
     //Update sibling pointers and parent->child if necessary
     if (node->next != node)
     {
-        if (parent->degree == 0)
-        {
-            cout << "\nMultiple children: " << parent->hashtag << " and " << node->hashtag << endl;
-            Print(maxNode, 0);
-        }
-
         node->prev->next = node->next;
         node->next->prev = node->prev;
 
@@ -113,28 +110,7 @@ void FibonacciHeap::CutNode(Node *node)
             parent->child = node->next;
     }
     else //Only child of parent so NULL parent->child
-    {
-        if (parent->degree == 0)
-        {
-            cout << "\nOne child: " << parent->hashtag << " and " << node->hashtag << endl;
-            Print(maxNode, 0);
-        }
-
         parent->child = NULL;
-    }
-
-    // if (parent->degree == 0)
-    // {
-    //     cout << "\nHeapSize = " << heapSize << endl;
-    //     cout << parent->hashtag << ": " << parent->degree << endl;
-    //     if (node->next == node)
-    //         cout << "one child" << endl;
-    //     // if (parent->parent == NULL)
-    //     //     cout << "parent: NULL" << parent->parent << endl;
-    //     // if (parent->child == NULL)
-    //     //     cout << "  Child: NULL" << parent->child << endl;
-    //     Print(parent, 0);
-    // }
 
     parent->degree = parent->degree - 1;
 
@@ -163,8 +139,10 @@ void FibonacciHeap::CascadeCut(Node *node)
         CutNode(node);
 }
 
+////TODO: find where root nodes are linking to another root node
+
 /********* Print Out Maxes *********/
-////TODO: run removeMax n times then reinsert the removed maxes
+//Run removeMax n times then reinsert the removed maxes
 string FibonacciHeap::PrintOutMaxes(int n)
 {
     Node *removedMaxes[n] = {NULL};
@@ -174,6 +152,10 @@ string FibonacciHeap::PrintOutMaxes(int n)
     //RemoveMax() n times
     for (int i = 0; i < n; i++)
     {
+
+        // cout << "\nPre remove/Post " << i << endl;
+        // Print();
+
         Node *temp = RemoveMax();
         removedMaxes[i] = new Node(temp->count, temp->hashtag);
         hashTable.erase(temp->hashtag);
@@ -187,9 +169,14 @@ string FibonacciHeap::PrintOutMaxes(int n)
             csvMaxes += removedMaxes[i]->hashtag;
     }
 
+    // cout << "After remove max" << endl;
+
     //Reinsert removed nodes
     for (int i = 0; i < n; i++)
         CheckIfHashtagExists(removedMaxes[i]->hashtag, removedMaxes[i]->count);
+
+    // cout << "\nPost insert " << endl;
+    // Print();
 
     return csvMaxes;
 }
@@ -212,8 +199,6 @@ Node *FibonacciHeap::RemoveMax()
         return maxNode;
     }
 
-    UnmarkChildren(maxNode->child);
-
     //Remove maxNode from the tree and link children to siblings if needed
     if (maxNode->next == maxNode)
     {
@@ -228,6 +213,10 @@ Node *FibonacciHeap::RemoveMax()
         maxNode->prev->next = maxNode->next;
         maxNode = LinkTrees(maxNode->next, maxNode->child);
     }
+
+    UnmarkChildren(maxNode);
+
+    SetParentToNull(maxNode);
 
     PairWiseMerge(maxNode);
 
@@ -256,15 +245,29 @@ void FibonacciHeap::UnmarkChildren(Node *node)
     } while (temp != node);
 }
 
+//Set node and siblings parent ptr to NULL
+void FibonacciHeap::SetParentToNull(Node *node)
+{
+    Node *current = node;
+    do
+    {
+        current->parent = NULL;
+        current = current->next;
+
+    } while (current != node);
+}
+
 /********* Pair Wise Merge *********/
 //Pairwise merge all the trees in the root list
 void FibonacciHeap::PairWiseMerge(Node *node)
 {
     // cout << "\nMerge" << endl;
-    // cout << "\nMerge" << endl;
     //Calculate the max degree a node can have
-    int maxDegrees = log2(heapSize);
+    int maxDegrees = ceil(log2(heapSize));
     Node *degArr[maxDegrees + 1] = {NULL};
+
+    // cout << "\nMerge print" << endl;
+    // Print();
 
     ////TODO: make do while
     //Perform the pairwise merging
@@ -289,8 +292,6 @@ void FibonacciHeap::PairWiseMerge(Node *node)
 
                 ////TODO: node is referencing incorrect data
                 //////    pointer was not properly assigned
-                cout << endl
-                     << node->degree << endl;
                 // cout << "\nTreeNode = " << treeNode << endl;
 
                 (treeNode->prev)->next = treeNode->next;
@@ -299,14 +300,22 @@ void FibonacciHeap::PairWiseMerge(Node *node)
             }
             else //node is less so make child
             {
+                // cout << "\nMergeWhile: treeNode" << endl;
                 ////TODO: change to remove Node from list instead of treeNode
                 //Remove treeNode from root list
+                // cout << "TreeNode: " << treeNode << endl;
+                //Print(node, 0);
+                // cout << "Degree: " << node->degree << endl;
+                // cout << "MaxDegree: " << maxDegrees << endl;
+                // cout << "TreeNode name " << treeNode->hashtag << endl;
+
                 (treeNode->prev)->next = treeNode->next;
                 (treeNode->next)->prev = treeNode->prev;
 
                 //if only one tree in heap
                 if (node->next == node)
                 {
+                    // cout << "\nMergeWhile: treeNode: solo" << endl;
                     //Only treeNode in heap so link to self
                     treeNode->next = treeNode;
                     treeNode->prev = treeNode;
@@ -314,6 +323,7 @@ void FibonacciHeap::PairWiseMerge(Node *node)
                 }
                 else //more than one
                 {
+                    // cout << "\nMergeWhile: treeNode: multi" << endl;
                     //Replace node with treeNode
                     node->prev->next = treeNode;
                     node->next->prev = treeNode;
@@ -326,6 +336,7 @@ void FibonacciHeap::PairWiseMerge(Node *node)
             //degArr[node->degree] = node;
             ////TODO: check if continue is needed
             continue;
+            // cout << "\nMergeWhile: degArr done" << endl;
         }
         else //Add node to empty degree spot in array
             degArr[node->degree] = node;
@@ -335,6 +346,7 @@ void FibonacciHeap::PairWiseMerge(Node *node)
             maxNode = node;
 
         node = node->next;
+        // cout << "\nMergeWhile: done" << endl;
     }
     // cout << "\nMerge 2.0" << endl;
 
@@ -355,6 +367,7 @@ void FibonacciHeap::PairWiseMerge(Node *node)
 //Merge the two nodes by making one the child of the other
 void FibonacciHeap::AddChild(Node *parent, Node *child)
 {
+    // cout << "\n Addchild" << endl;
     // cout << "\nAddChild" << endl;
     ////TODO:
     //Remove child from tree
@@ -370,9 +383,7 @@ void FibonacciHeap::AddChild(Node *parent, Node *child)
     // cout << "\nDegree = " << parent->degree << endl;
     parent->child = LinkTrees(child, parent->child);
     parent->degree = parent->degree + 1;
-    if (parent->degree == -1)
-        cout << "\nAddchild: " << parent->hashtag << endl;
-    // cout << "\nDegree = " << parent->degree << endl;
+
     // cout << "\nAddChild 2.0" << endl;
 }
 
@@ -380,6 +391,7 @@ void FibonacciHeap::AddChild(Node *parent, Node *child)
 //Link the two nodes along their next/prev pointers and return larger node
 Node *FibonacciHeap::LinkTrees(Node *nodeOne, Node *nodeTwo)
 {
+    // cout << "\nLinkTrees " << endl;
     // cout << "\nLinkTrees" << endl;
     //Null check both nodes
     if (nodeTwo == NULL)
@@ -394,6 +406,7 @@ Node *FibonacciHeap::LinkTrees(Node *nodeOne, Node *nodeTwo)
     nodeTwo->next = nodeOne;
     nodeOne->prev = nodeTwo;
 
+    // cout << "\nPost Link " << endl;
     //Compare counts, return larger node
     if (nodeTwo->count < nodeOne->count)
         return nodeOne;
@@ -411,36 +424,41 @@ int FibonacciHeap::GetMax()
 //TEST methods
 void FibonacciHeap::Print()
 {
-    cout << "\nStart Print" << endl;
     Print(maxNode, 0);
-    cout << "\nEnd Print" << endl;
 }
 
 void FibonacciHeap::Print(Node *node, int depth)
 {
     //Print out siblings
-    Node *temp = node->next;
+    Node *temp = node;
 
-    //space based on depth
-    for (int i = 0; i < depth; i++)
-        cout << "  ";
-    cout << node->hashtag << ": " << node->degree << ": " << node->count << endl;
+    // //space based on depth
+    // for (int i = 0; i < depth; i++)
+    //     cout << "  ";
 
-    ChildPrint(node, depth);
+    // value = "self";
+    // if (node->next != node)
+    //     value = node->next->hashtag;
+    // cout << node->hashtag << " : next = " << value << endl;
 
-    while (temp != node && temp != NULL)
+    // ChildPrint(node, depth);
+
+    do
     {
 
         //space based on depth
         for (int i = 0; i < depth; i++)
             cout << "  ";
 
-        cout << temp->hashtag << ": " << temp->degree << ": " << temp->count << endl;
+        string value = "self";
+        if (temp->next != temp)
+            value = temp->next->hashtag;
+        cout << temp->hashtag << endl;
 
         ChildPrint(temp, depth);
 
         temp = temp->next;
-    }
+    } while (temp != node && temp != NULL);
 }
 
 //TEST
