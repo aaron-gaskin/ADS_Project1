@@ -1,3 +1,12 @@
+/*
+Name: Aaron Gaskin
+Section: 11153
+UFID: 9930-5710
+References used:
+https://www.geeksforgeeks.org/fibonacci-heap-deletion-extract-min-and-decrease-key/?ref=rp
+https://github.com/robinmessage/fibonacci/blob/master/test.cpp
+*/
+
 #include <iostream>
 #include <string>
 #include <map>
@@ -36,6 +45,7 @@ private:
     void PairWiseMerge(Node *node);
     void AddChild(Node *parent, Node *child);
     Node *LinkTrees(Node *newNode, Node *nodeTwo);
+    void UnlinkNodeFromSiblingList(Node *node);
     int GetMax();
 
     void Print(Node *node, int depth);

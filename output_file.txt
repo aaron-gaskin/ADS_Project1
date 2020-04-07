@@ -1,2 +1,11 @@
-saturday,sunday,monday
-saturday,sunday,reading,friday,monday
+cholelithotomy,chloramine,chlorococcum,chon,chivarras
+chloramine,chloroprene,chivarras,chloral,chlorococcum,cholelithotomy,chlorothiazide
+chloramine,chivarras,chirurgy,chloroprene,chisel,chocolate,chloral,chloroquine,chlorococcum
+choke,chokidar
+choke,chishona,chloroquine,chloroprene,chokidar,chloramphenicol,chirurgy,chlorothiazide,chokra,choleraic,chloramine,chivarras,chlorophyll,chon,choir,chirurgery,chlorura,cholecystectomy
+chlorococcum,chishona,choke,chirurgery,cholelithotomy,chokra,chloroprene,chitterings,chisel,choleraic,cholecystectomy,chirurgy,chloramphenicol,chloroquine,chlorophyceae
+chishona,cholelithotomy,chlorococcum,choleraic,choke,chloramphenicol,chivarras
+choke,chlorura,chisel,cholelithotomy,chlorophyll,chishona,choleraic,chivarras
+choke,chisel,cholelithotomy
+chlorura,chlorophyll,cholecystectomy,choleraic,cholelithotomy,chisel,choke
+chlorophyll,chlorura,choleraic,cholelithotomy,cholecystectomy,chlorella,choke,chlorococcum,chisel

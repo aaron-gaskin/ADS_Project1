@@ -1,3 +1,12 @@
+/*
+Name: Aaron Gaskin
+Section: 11153
+UFID: 9930-5710
+References used:
+https://www.geeksforgeeks.org/fibonacci-heap-deletion-extract-min-and-decrease-key/?ref=rp
+https://github.com/robinmessage/fibonacci/blob/master/test.cpp
+*/
+
 #include "fibonacci_heap.h"
 
 //Constructors and Destructors
@@ -87,8 +96,7 @@ void FibonacciHeap::CutNode(Node *node)
     //Update sibling pointers and parent->child if necessary
     if (node->next != node)
     {
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
+        UnlinkNodeFromSiblingList(node);
 
         if (parent->child == node)
             parent->child = node->next;
@@ -180,8 +188,8 @@ Node *FibonacciHeap::RemoveNode(Node *node)
     if (node->next != node)
     {
         //If siblings, link with node children
-        node->next->prev = node->prev;
-        node->prev->next = node->next;
+
+        UnlinkNodeFromSiblingList(node);
 
         //Update parent->child pointer if needed
         if (node->parent != NULL)
@@ -270,20 +278,14 @@ void FibonacciHeap::PairWiseMerge(Node *node)
             //Reset array node
             degArr[node->degree] = NULL;
 
+            //Remove treeNode from root list
+            UnlinkNodeFromSiblingList(treeNode);
+
             //Compare node counts
             if (node->count > treeNode->count) //treeNode is less so make
-            {
-                //Remove treeNode from root list
-                (treeNode->prev)->next = treeNode->next;
-                (treeNode->next)->prev = treeNode->prev;
                 AddChild(node, treeNode);
-            }
             else //node is less so make child
             {
-                //Remove treeNode from root list
-                (treeNode->prev)->next = treeNode->next;
-                (treeNode->next)->prev = treeNode->prev;
-
                 //if only one tree in heap
                 if (node->next == node)
                 {
@@ -381,6 +383,13 @@ Node *FibonacciHeap::LinkTrees(Node *nodeOne, Node *nodeTwo)
         return nodeOne;
     else
         return nodeTwo;
+}
+
+//Remove node from sibling list
+void FibonacciHeap::UnlinkNodeFromSiblingList(Node *node)
+{
+    node->next->prev = node->prev;
+    node->prev->next = node->next;
 }
 
 /********* Get Max *********/
