@@ -1,3 +1,11 @@
+/*
+Name: Aaron Gaskin
+Section: 11153
+UFID: 9930-5710
+References used:
+https://www.geeksforgeeks.org/fibonacci-heap-deletion-extract-min-and-decrease-key/?ref=rp
+https://github.com/robinmessage/fibonacci/blob/master/test.cpp
+*/
 #include "fibonacci_heap.h"
 #include <fstream>
 #include <bits/stdc++.h>
@@ -29,7 +37,7 @@ int main(int argc, char *argv[])
     //verify correct number of inputs
     if (argc != 2)
     {
-        cout << "ERROR: incorrect input, need exactly one file name." << endl;
+        cout << "ERROR: incorrect input, expecting exactly one file name." << endl;
         return 0;
     }
 
@@ -41,6 +49,9 @@ int main(int argc, char *argv[])
         //Read file line by line and perform operations based on line
         string line = "";
         FibonacciHeap *fibHeap = new FibonacciHeap();
+        string output;
+
+        ofstream writer("output_file.txt");
 
         while (getline(reader, line))
         {
@@ -49,33 +60,20 @@ int main(int argc, char *argv[])
                 AddHashtagToTree(line.substr(1), fibHeap);
 
             else if (line == "stop") //stop, end the program
-                cout << "That's all folks: " << line << endl;
+                break;
 
             else //integer, print out n maxes
             {
-                //TEST
-                // cout << endl
-                //      << "Pre remove" << endl;
-                // fibHeap->Print();
 
                 int n = atoi(line.c_str());
-                string output = fibHeap->PrintOutMaxes(n);
-
-                cout << output << endl;
-
-                // cout << endl
-                //      << "Post remove" << endl;
-                // fibHeap->Print();
+                output = fibHeap->PrintOutMaxes(n);
+                writer << output << endl;
             }
         }
 
-        //fibHeap->Print();
-
         reader.close();
+        writer.close();
         delete fibHeap;
-        //TEST
-
-        ////TODO: send output to output_file.txt
     }
     else
         cout << "ERROR: File not found." << endl;
